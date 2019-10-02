@@ -1,8 +1,8 @@
 {
-  "name": "authtdd",
+  "name": "reader-server",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
+  "license": "private",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js --ignore __tests__",
