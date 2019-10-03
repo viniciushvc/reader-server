@@ -1,24 +1,18 @@
 const { User } = require('../models')
 
 class UserController {
+  /**
+   * Showe
+   */
   async index(req, res) {
     const user = await User.findAll({ attributes: ['id', 'email'] })
 
     return res.json(user)
   }
 
-  async store(req, res) {
-    const { email } = req.body
-
-    if (await User.findOne({ where: { email } })) {
-      return res.status(400).json({ error: 'User already exist' })
-    }
-
-    const user = await User.create(req.body)
-
-    return res.status(200).json(user)
-  }
-
+  /**
+   * New user
+   */
   async store(req, res) {
     const { email } = req.body
 
