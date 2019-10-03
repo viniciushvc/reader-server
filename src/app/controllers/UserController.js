@@ -2,7 +2,7 @@ const { User } = require('../models')
 
 class UserController {
   /**
-   * Showe
+   * Show users
    */
   async index(req, res) {
     const user = await User.findAll({ attributes: ['id', 'email'] })
@@ -25,6 +25,9 @@ class UserController {
     return res.status(200).json({ message: 'User created', error: '' })
   }
 
+  /**
+   * Update user
+   */
   async update(req, res) {
     const { id } = req.params
 
@@ -33,6 +36,9 @@ class UserController {
     return res.status(200).json({ message: 'User updated', error: '' })
   }
 
+  /**
+   * Delete user
+   */
   async delete(req, res) {
     const { id } = req.params
 
