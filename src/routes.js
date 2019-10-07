@@ -4,15 +4,21 @@ const authMiddleware = require('./app/middleware/auth')
 
 const UserController = require('./app/controllers/UserController')
 const SessionController = require('./app/controllers/SessionController')
+const WebParserController = require('./app/controllers/WebParserController')
 
-routes.get('/users', UserController.index)
 routes.post('/users', UserController.store)
-routes.put('/users/:id', UserController.update)
-routes.delete('/users/:id', UserController.delete)
 
 routes.post('/sessions', SessionController.store)
 
+// authorization
 routes.use(authMiddleware)
+
+routes.get('/users', UserController.show)
+routes.put('/users', UserController.update)
+routes.delete('/users', UserController.delete)
+
+routes.get('/webparser', WebParserController.index)
+routes.post('/webparser', WebParserController.store)
 
 routes.get('/dashboard', (req, res) => {
   return res.status(200).send('ok')

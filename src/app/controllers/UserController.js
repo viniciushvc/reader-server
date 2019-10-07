@@ -2,14 +2,18 @@ const { User } = require('../models')
 
 class UserController {
   /**
-   * Show users
+   * Show user infos
    */
-  async index(req, res) {
-    const user = await User.findAll({ attributes: ['id', 'email'] })
+  async show(req, res) {
+    const id = req.userId
+
+    const user = await User.findOne({
+      where: { id },
+      attributes: ['name', 'password_hash'],
+    })
 
     return res.json(user)
   }
-
   /**
    * New user
    */
@@ -29,7 +33,7 @@ class UserController {
    * Update user
    */
   async update(req, res) {
-    const { id } = req.params
+    const id = req.userId
 
     await User.update(req.body, { where: { id } })
 
@@ -40,7 +44,7 @@ class UserController {
    * Delete user
    */
   async delete(req, res) {
-    const { id } = req.params
+    const id = req.userId
 
     const user = await User.findOne(req.body, { where: { id } })
 
@@ -48,7 +52,7 @@ class UserController {
       return res.status(400).json({ message: '', error: 'User not found' })
     }
 
-    user.destroy()
+    await user.destroy()
 
     return res.status(200).json({ message: 'User deleted', error: '' })
   }
