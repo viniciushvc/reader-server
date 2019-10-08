@@ -4,12 +4,25 @@ const jwt = require('jsonwebtoken')
 
 class WebParserController {
   /**
-   * Show users
+   * All user pages
    */
   async index(req, res) {
-    // console.log(req.userId)
+    const web = await WebParser.findAll({ attributes: ['id', 'title'] })
 
-    const web = await WebParser.findAll()
+    return res.json(web)
+  }
+
+  /**
+   * Show page
+   */
+  async show(req, res) {
+    const { id } = req.params
+
+    const web = await WebParser.findOne({ where: { id } })
+
+    if (!web) {
+      return res.status(400).json({ message: '', error: 'Page not found' })
+    }
 
     return res.json(web)
   }

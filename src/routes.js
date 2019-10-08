@@ -18,6 +18,7 @@ routes.put('/users', UserController.update)
 routes.delete('/users', UserController.delete)
 
 routes.get('/webparser', WebParserController.index)
+routes.get('/webparser/:id', WebParserController.show)
 routes.post('/webparser', WebParserController.store)
 
 routes.get('/dashboard', (req, res) => {
