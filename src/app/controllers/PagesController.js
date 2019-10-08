@@ -1,15 +1,26 @@
-const { WebParser } = require('../models')
+const { Page, User } = require('../models')
 const Mercury = require('@postlight/mercury-parser')
-const jwt = require('jsonwebtoken')
 
-class WebParserController {
+class PagesController {
   /**
    * All user pages
    */
   async index(req, res) {
-    const web = await WebParser.findAll({ attributes: ['id', 'title'] })
+    const pages = await Page.findAll({
+      attributes: ['id', 'title'],
+      include: [
+        {
+          model: User,
+          as: 'users',
+          through: {
+            attributes: [],
+            where: { user_id: req.userId },
+          },
+        },
+      ],
+    })
 
-    return res.json(web)
+    return res.json(pages)
   }
 
   /**
@@ -18,7 +29,7 @@ class WebParserController {
   async show(req, res) {
     const { id } = req.params
 
-    const web = await WebParser.findOne({ where: { id } })
+    const web = await Page.findOne({ where: { id } })
 
     if (!web) {
       return res.status(400).json({ message: '', error: 'Page not found' })
@@ -35,14 +46,16 @@ class WebParserController {
 
     const parser = await Mercury.parse(url)
 
-    if (await WebParser.findOne({ where: { url: parser.url } })) {
+    if (await Page.findOne({ where: { url: parser.url } })) {
       return res.status(400).json({ message: '', error: 'Page already exist' })
     }
 
-    await WebParser.create(parser)
+    const page = await Page.create(parser)
+
+    page.setUsers(req.userId)
 
     return res.status(200).json({ message: "Page saved'", error: '' })
   }
 }
 
-module.exports = new WebParserController()
+module.exports = new PagesController()

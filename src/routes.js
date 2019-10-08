@@ -4,7 +4,7 @@ const authMiddleware = require('./app/middleware/auth')
 
 const UserController = require('./app/controllers/UserController')
 const SessionController = require('./app/controllers/SessionController')
-const WebParserController = require('./app/controllers/WebParserController')
+const PagesController = require('./app/controllers/PagesController')
 
 routes.post('/users', UserController.store)
 
@@ -17,9 +17,9 @@ routes.get('/users', UserController.show)
 routes.put('/users', UserController.update)
 routes.delete('/users', UserController.delete)
 
-routes.get('/webparser', WebParserController.index)
-routes.get('/webparser/:id', WebParserController.show)
-routes.post('/webparser', WebParserController.store)
+routes.get('/pages', PagesController.index)
+routes.get('/pages/:id', PagesController.show)
+routes.post('/pages', PagesController.store)
 
 routes.get('/dashboard', (req, res) => {
   return res.status(200).send('ok')

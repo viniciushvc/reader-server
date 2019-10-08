@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const WebParser = sequelize.define('WebParser', {
+  const Page = sequelize.define('Page', {
     title: DataTypes.STRING,
     author: DataTypes.STRING,
     content: DataTypes.STRING,
@@ -9,5 +9,13 @@ module.exports = (sequelize, DataTypes) => {
     domain: DataTypes.STRING,
   })
 
-  return WebParser
+  Page.associate = models => {
+    Page.belongsToMany(models.User, {
+      through: 'users_pages',
+      as: 'users',
+      foreignKey: 'page_id',
+    })
+  }
+
+  return Page
 }

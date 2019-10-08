@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   )
 
+  User.associate = models => {
+    User.belongsToMany(models.Page, {
+      through: 'users_pages',
+      as: 'pages',
+      foreignKey: 'user_id',
+    })
+  }
+
   User.prototype.checkPassword = function(password) {
     return bcrypt.compare(password, this.password_hash)
   }
