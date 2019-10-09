@@ -1,4 +1,4 @@
-const { Page, User } = require('../models')
+const { Page, User, sequelize } = require('../models')
 const Mercury = require('@postlight/mercury-parser')
 
 class PagesController {
@@ -6,19 +6,19 @@ class PagesController {
    * All user pages
    */
   async index(req, res) {
-    const pages = await Page.findAll({
-      attributes: ['id', 'title'],
-      include: [
-        {
-          model: User,
-          as: 'users',
-          through: {
-            attributes: [],
-            where: { user_id: req.userId },
-          },
-        },
-      ],
-    })
+    const pages = await sequelize.query(
+      `SELECT p.* FROM
+          users_pages up, 
+          pages p, 
+          users u 
+        WHERE 
+          up.page_id = p.id AND 
+          up.user_id = u.id AND
+          u.id = ${req.userId}`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    )
 
     return res.json(pages)
   }
