@@ -10,16 +10,16 @@ module.exports = {
         allowNull: false,
       },
       title: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(1000),
       },
       author: {
         type: Sequelize.STRING,
       },
       content: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(20000),
       },
       lead_image_url: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(1000),
       },
       date_published: {
         type: Sequelize.STRING,

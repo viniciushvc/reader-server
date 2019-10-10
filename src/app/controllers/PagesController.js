@@ -1,5 +1,6 @@
 const { Page, User, sequelize } = require('../models')
 const Mercury = require('@postlight/mercury-parser')
+const removeTags = require('../../utils/removeTags')
 
 class PagesController {
   /**
@@ -44,13 +45,13 @@ class PagesController {
   async store(req, res) {
     const { url } = req.body
 
-    const parser = await Mercury.parse(url)
+    const parse = await Mercury.parse(url)
 
-    if (await Page.findOne({ where: { url: parser.url } })) {
+    if (await Page.findOne({ where: { url: parse.url } })) {
       return res.status(400).json({ message: '', error: 'Page already exist' })
     }
 
-    const page = await Page.create(parser)
+    const page = await Page.create(removeTags(parse))
 
     page.setUsers(req.userId)
 
