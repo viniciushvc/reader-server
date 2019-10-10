@@ -8,7 +8,7 @@ class PagesController {
    */
   async index(req, res) {
     const pages = await sequelize.query(
-      `SELECT p.* FROM
+      `SELECT p.id, p.title, p.lead_image_url FROM
           users_pages up, 
           pages p, 
           users u 
@@ -47,15 +47,36 @@ class PagesController {
 
     const parse = await Mercury.parse(url)
 
-    if (await Page.findOne({ where: { url: parse.url } })) {
-      return res.status(400).json({ message: '', error: 'Page already exist' })
+    const exists = await Page.findOne({ where: { url: parse.url } })
+
+    if (!exists) {
+      const page = await Page.create(removeTags(parse))
+
+      page.setUsers(req.userId)
+
+      return res.status(200).json({ message: "Page saved'", error: '' })
+    } else {
+      exists.setUsers(req.userId)
     }
+  }
 
-    const page = await Page.create(removeTags(parse))
+  /**
+   * Save new page
+   */
+  async delete(req, res) {
+    const { id } = req.body
 
-    page.setUsers(req.userId)
+    console.log(req)
 
-    return res.status(200).json({ message: "Page saved'", error: '' })
+    await sequelize.query(
+      `DELETE FROM 
+          users_pages
+        WHERE 
+          page_id = ${id} AND 
+          user_id = ${req.userId}`
+    )
+
+    return res.status(200).json({ message: "Page removed'", error: '' })
   }
 }
 

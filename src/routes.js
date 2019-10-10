@@ -20,6 +20,7 @@ routes.delete('/users', UserController.delete)
 routes.get('/pages', PagesController.index)
 routes.get('/pages/:id', PagesController.show)
 routes.post('/pages', PagesController.store)
+routes.delete('/pages', PagesController.delete)
 
 routes.get('/dashboard', (req, res) => {
   return res.status(200).send('ok')
