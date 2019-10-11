@@ -1,6 +1,5 @@
-const { Page, User, sequelize } = require('../models')
+const { Page, sequelize } = require('../models')
 const Mercury = require('@postlight/mercury-parser')
-const removeTags = require('../../utils/removeTags')
 
 class PagesController {
   /**
@@ -45,19 +44,18 @@ class PagesController {
   async store(req, res) {
     const { url } = req.body
 
-    const parse = await Mercury.parse(url)
+    const parse = await Mercury.parse(url, { contentType: 'text' })
 
     const exists = await Page.findOne({ where: { url: parse.url } })
 
-    if (!exists) {
-      const page = await Page.create(removeTags(parse))
+    if (exists) exists.setUsers(req.userId)
+    else {
+      const page = await Page.create(parse)
 
       page.setUsers(req.userId)
-
-      return res.status(200).json({ message: "Page saved'", error: '' })
-    } else {
-      exists.setUsers(req.userId)
     }
+
+    return res.status(200).json({ message: "Page saved'", error: '' })
   }
 
   /**
@@ -65,8 +63,6 @@ class PagesController {
    */
   async delete(req, res) {
     const { id } = req.body
-
-    console.log(req)
 
     await sequelize.query(
       `DELETE FROM 
