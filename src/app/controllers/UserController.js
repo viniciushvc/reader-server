@@ -24,9 +24,15 @@ class UserController {
       return res.status(400).json({ message: '', error: 'User already exist' })
     }
 
-    await User.create(req.body)
+    const user = await User.create(req.body)
 
-    return res.status(200).json({ message: 'User created', error: '' })
+    return res
+      .status(200)
+      .json({
+        result: { token: user.generateToken() },
+        message: 'User created',
+        error: '',
+      })
   }
 
   /**
