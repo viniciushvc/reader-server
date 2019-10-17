@@ -26,13 +26,12 @@ class UserController {
 
     const user = await User.create(req.body)
 
-    return res
-      .status(200)
-      .json({
-        result: { token: user.generateToken() },
-        message: 'User created',
-        error: '',
-      })
+    return res.status(200).json({
+      name: user.name,
+      token: user.generateToken(),
+      message: 'User created',
+      error: '',
+    })
   }
 
   /**
