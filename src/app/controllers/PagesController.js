@@ -48,14 +48,21 @@ class PagesController {
 
     const exists = await Page.findOne({ where: { url: parse.url } })
 
-    if (exists) exists.setUsers(req.userId)
-    else {
+    let result
+
+    if (exists) {
+      exists.setUsers(req.userId)
+
+      result = exists
+    } else {
       const page = await Page.create(parse)
 
       page.setUsers(req.userId)
+
+      result = page
     }
 
-    return res.status(200).json({ message: "Page saved'", error: '' })
+    return res.status(200).json({ result, message: 'Page saved', error: '' })
   }
 
   /**
@@ -72,7 +79,7 @@ class PagesController {
           user_id = ${req.userId}`
     )
 
-    return res.status(200).json({ message: "Page removed'", error: '' })
+    return res.status(200).json({ message: 'Page removed', error: '' })
   }
 }
 
