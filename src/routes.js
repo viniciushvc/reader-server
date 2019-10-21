@@ -5,6 +5,7 @@ const authMiddleware = require('./app/middleware/auth')
 const UserController = require('./app/controllers/UserController')
 const SessionController = require('./app/controllers/SessionController')
 const PagesController = require('./app/controllers/PagesController')
+const FeedController = require('./app/controllers/FeedController')
 
 routes.post('/users', UserController.store)
 
@@ -21,6 +22,8 @@ routes.get('/pages', PagesController.index)
 routes.get('/pages/:id', PagesController.show)
 routes.post('/pages', PagesController.store)
 routes.delete('/pages', PagesController.delete)
+
+routes.get('/feed', FeedController.index)
 
 routes.get('/dashboard', (req, res) => {
   return res.status(200).send('ok')
