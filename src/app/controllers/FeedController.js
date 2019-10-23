@@ -1,72 +1,65 @@
-const feed = require('../../getFeed')
+const { Feed } = require('../models')
+const Parser = require('rss-parser')
 
 class FeedController {
   /**
-   * All user pages
+   * All feed user
    */
   async index(req, res) {
-    const pages = feed
+    let parser = new Parser()
 
-    return res.json(pages)
-  }
+    const feeds = await Feed.findAll({
+      where: { user_id: req.userId },
+      attributes: ['url'],
+      raw: true,
+    })
 
-  /**
-   * Show page
-   */
-  async show(req, res) {
-    const { id } = req.params
+    try {
+      const result = []
 
-    const web = await Page.findOne({ where: { id } })
+      for (const item of feeds) {
+        const feed = await parser.parseURL(item.url)
 
-    if (!web) {
-      return res.status(400).json({ message: '', error: 'Page not found' })
+        result.push(feed.items)
+      }
+
+      return res.status(200).json(result)
+    } catch (e) {
+      next(e)
     }
-
-    return res.json(web)
   }
 
   /**
-   * Save new page
+   * Save new feed
    */
   async store(req, res) {
     const { url } = req.body
 
-    const parse = await Mercury.parse(url, { contentType: 'text' })
-
-    const exists = await Page.findOne({ where: { url: parse.url } })
-
-    let result
-
-    if (exists) {
-      exists.setUsers(req.userId)
-
-      result = exists
+    if (await Feed.findOne({ where: { url, user_id: req.userId } })) {
+      return res.status(200).json({ message: 'Feed already exists', error: '' })
     } else {
-      const page = await Page.create(parse)
+      await Feed.create({ url, user_id: req.userId })
 
-      page.setUsers(req.userId)
-
-      result = page
+      return res.status(200).json({ message: 'Feed saved', error: '' })
     }
-
-    return res.status(200).json({ result, message: 'Page saved', error: '' })
   }
 
   /**
-   * Save new page
+   * Delete feed
    */
   async delete(req, res) {
-    const { id } = req.body
+    const user_id = req.userId
+    const { url } = req.body
 
-    await sequelize.query(
-      `DELETE FROM 
-          users_pages
-        WHERE 
-          page_id = ${id} AND 
-          user_id = ${req.userId}`
-    )
+    const feed = await Feed.findOne({ where: { user_id, url } })
 
-    return res.status(200).json({ message: 'Page removed', error: '' })
+    if (!feed) {
+      return res.status(400).json({ message: '', error: 'Feed not found' })
+    }
+
+    await feed.destroy()
+
+    return res.status(200).json({ message: 'Feed deleted', error: '' })
   }
 }
 

@@ -24,6 +24,8 @@ routes.post('/pages', PagesController.store)
 routes.delete('/pages', PagesController.delete)
 
 routes.get('/feed', FeedController.index)
+routes.post('/feed', FeedController.store)
+routes.delete('/feed', FeedController.delete)
 
 routes.get('/dashboard', (req, res) => {
   return res.status(200).send('ok')
