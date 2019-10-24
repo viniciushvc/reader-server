@@ -7,7 +7,7 @@ class PagesController {
    */
   async index(req, res) {
     const pages = await sequelize.query(
-      `SELECT p.id, p.title, p.lead_image_url FROM
+      `SELECT p.id, p.title, p.lead_image_url, p.content FROM
           users_pages up, 
           pages p, 
           users u 

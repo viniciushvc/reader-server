@@ -1,14 +1,14 @@
 const { Feed } = require('../models')
-const Parser = require('rss-parser')
+const RssParser = require('rss-parser')
+
+const rssParser = new RssParser()
 
 class FeedController {
   /**
    * All feed user
    */
   async index(req, res) {
-    let parser = new Parser()
-
-    const feeds = await Feed.findAll({
+    const urls = await Feed.findAll({
       where: { user_id: req.userId },
       attributes: ['url'],
       raw: true,
@@ -17,10 +17,21 @@ class FeedController {
     try {
       const result = []
 
-      for (const item of feeds) {
-        const feed = await parser.parseURL(item.url)
+      for (const { url } of urls) {
+        const feed = await rssParser.parseURL(url)
 
-        result.push(feed.items)
+        if (feed.items.length > 0) {
+          for (const item of feed.items) {
+            const obj = {
+              title: item.title,
+              link: item.link,
+              date: item.pubDate,
+              content: item['content:encoded'] || item.content,
+            }
+
+            result.push(obj)
+          }
+        }
       }
 
       return res.status(200).json(result)
