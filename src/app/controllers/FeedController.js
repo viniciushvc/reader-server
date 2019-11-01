@@ -1,13 +1,15 @@
 const { Feed } = require('../models')
 const RssParser = require('rss-parser')
 
-const rssParser = new RssParser()
+const rssParser = new RssParser({
+  headers: { Accept: 'application/rss+xml, text/xml; q=0.1' },
+})
 
 class FeedController {
   /**
    * All feed user
    */
-  async index(req, res) {
+  async index(req, res, next) {
     const urls = await Feed.findAll({
       where: { user_id: req.userId },
       attributes: ['url'],
@@ -37,7 +39,18 @@ class FeedController {
       return res.status(200).json(result)
     } catch (e) {
       next(e)
+
+      return res.status(400).json({ message: '', error: 'Internal error' })
     }
+  }
+
+  async show(req, res) {
+    const result = await Feed.findAll({
+      where: { user_id: req.userId },
+      attributes: ['id', 'url'],
+    })
+
+    return res.status(200).json(result)
   }
 
   /**
@@ -46,12 +59,18 @@ class FeedController {
   async store(req, res) {
     const { url } = req.body
 
-    if (await Feed.findOne({ where: { url, user_id: req.userId } })) {
-      return res.status(200).json({ message: 'Feed already exists', error: '' })
-    } else {
-      await Feed.create({ url, user_id: req.userId })
+    try {
+      if (await Feed.findOne({ where: { url, user_id: req.userId } })) {
+        return res
+          .status(200)
+          .json({ message: 'Feed already exists', error: '' })
+      } else {
+        await Feed.create({ url, user_id: req.userId })
 
-      return res.status(200).json({ message: 'Feed saved', error: '' })
+        return res.status(200).json({ message: 'Feed saved', error: '' })
+      }
+    } catch (e) {
+      return res.status(400).json({ message: '', error: 'Invalid URL' })
     }
   }
 
@@ -59,10 +78,9 @@ class FeedController {
    * Delete feed
    */
   async delete(req, res) {
-    const user_id = req.userId
-    const { url } = req.body
+    const { id } = req.body
 
-    const feed = await Feed.findOne({ where: { user_id, url } })
+    const feed = await Feed.findOne({ where: { id } })
 
     if (!feed) {
       return res.status(400).json({ message: '', error: 'Feed not found' })

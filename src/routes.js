@@ -24,6 +24,7 @@ routes.post('/pages', PagesController.store)
 routes.delete('/pages', PagesController.delete)
 
 routes.get('/feed', FeedController.index)
+routes.get('/feed/list', FeedController.show)
 routes.post('/feed', FeedController.store)
 routes.delete('/feed', FeedController.delete)
 
