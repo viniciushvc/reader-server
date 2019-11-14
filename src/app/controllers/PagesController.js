@@ -44,7 +44,12 @@ class PagesController {
   async store(req, res) {
     const { url } = req.body
 
-    const parse = await Mercury.parse(url, { contentType: 'text' })
+    const parse = await Mercury.parse(url)
+
+    parse.content = parse.content.replace(
+      /<(div|\/div|iframe|\/iframe)[^>]{0,}>/g,
+      ''
+    )
 
     const exists = await Page.findOne({ where: { url: parse.url } })
 
